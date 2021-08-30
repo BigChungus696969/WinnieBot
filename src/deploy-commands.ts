@@ -26,7 +26,16 @@ const commands = [
     new SlashCommandBuilder()
     .setName("check")
     .setDescription("check social credit score")
-    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something'))
+    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something')),
+    new SlashCommandBuilder()
+    .setName("add_filter")
+    .setDescription("add a filter")
+    .addStringOption(option => option.setName('filter').setDescription('A word to filter'))
+    .addIntegerOption(option => option.setName('cost').setDescription('credits to cut')),
+    new SlashCommandBuilder()
+    .setName("cut_filter")
+    .setDescription("remove a filter")
+    .addStringOption(option => option.setName('filter').setDescription('A word to filter'))
 ].map((command) => command.toJSON());
 
 export function bootStrapCommands() {

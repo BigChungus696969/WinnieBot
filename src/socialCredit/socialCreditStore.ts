@@ -25,7 +25,6 @@ export function addSocialCredit(userId: string, amount: number) {
     const original : SocialCredit = localStorage.getItem(userId);
     const newCredit : SocialCredit = { score: Math.min(original.score + amount , 100)};
     localStorage.setItem(userId,newCredit!);
-    socialCreditEmitter.emit('addSocialCredit', userId, amount, newCredit.score);
 }
 
 export function reduceSocialCredit(userId: string, amount: number) {
@@ -36,7 +35,6 @@ export function reduceSocialCredit(userId: string, amount: number) {
     const newCredit : SocialCredit = { score: Math.max(original.score - amount, 0)};
     
     localStorage.setItem(userId,newCredit!);
-    socialCreditEmitter.emit('cutSocialCredit', userId, amount, newCredit.score);
 }
 
 export function getSocialCredit(userId: string) : SocialCredit{
