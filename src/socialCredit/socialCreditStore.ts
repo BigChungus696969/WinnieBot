@@ -24,8 +24,8 @@ export function addSocialCredit(userId: string, amount: number) {
     if(!localStorage.getItem(userId)) {
         return;
     }
-    const original : SocialCredit = localStorage.getItem(userId);
-    const newCredit : SocialCredit = { score: Math.min(original.score + amount , 100)};
+    const original : number = Math.max(localStorage.getItem( userId ).score, 0);
+    const newCredit : SocialCredit = { score: Math.min(original + amount , 100)};
     localStorage.setItem(userId,newCredit!);
 }
 
@@ -37,9 +37,9 @@ export function reduceSocialCredit(userId: string, amount: number) {
     if(original.score === 0) {
         return;
     }
-    let value = original.score - amount;
-    value = Math.max(value,0);
-    const newCredit : SocialCredit = { score: Math.max(value, 0)};
+    const delta = Math.max(amount,0);
+    let value = Math.max( original.score - delta , 0);
+    const newCredit : SocialCredit = { score: value};
     localStorage.setItem(userId,newCredit!);
 }
 
