@@ -35,7 +35,10 @@ const commands = [
     new SlashCommandBuilder()
     .setName("cut_filter")
     .setDescription("remove a filter")
-    .addStringOption(option => option.setName('filter').setDescription('A word to filter'))
+    .addStringOption(option => option.setName('filter').setDescription('A word to filter')),
+    new SlashCommandBuilder()
+    .setName("leader_board")
+    .setDescription("Lists the leadboard of the best citizens")
 ].map((command) => command.toJSON());
 
 export function bootStrapCommands() {

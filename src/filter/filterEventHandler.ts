@@ -4,13 +4,11 @@ import { getSocialCredit, reduceSocialCredit } from "../socialCredit/socialCredi
 import { clientId } from "../../config.json";
 
 export function bootStrapFilterEvents(){
-    filterEmitter.on(FILTER_FOUND_EVENT, async (message: Message, word: string) => {
+    filterEmitter.on(FILTER_FOUND_EVENT, async (message: Message, cost: number) => {
         if(message.author.id === clientId){
             return;
         }
         const userId = message.author.id;
-        console.log(message);
-        const cost : number = getFilter(word)?.cost as number;
         reduceSocialCredit(userId,cost);
         const newNum = getSocialCredit(userId);
 		await message.reply(`${message.author} Your said nono word, now your social credit is: `+ newNum.score);

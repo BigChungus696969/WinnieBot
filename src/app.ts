@@ -2,8 +2,8 @@
 import { Client, Intents, User } from "discord.js";
 import { token, guildId } from '../config.json';
 import { bootStrapCommands } from "./deploy-commands";
-import { addSocialCredit, ADD_EVENT, CUT_EVENT, getSocialCredit, onStartUp, reduceSocialCredit, socialCreditEmitter } from "./socialCredit/socialCreditStore";
-import { addFilter, checkFilter, filterEmitter, FILTER_ADD_EVENT, FILTER_FOUND_EVENT, FILTER_REMOVE_EVENT } from "./filter/filterStore";
+import { addSocialCredit, ADD_EVENT, CUT_EVENT, getSocialCredit, LEADERBOARD_EVENT, onStartUp, reduceSocialCredit, socialCreditEmitter } from "./socialCredit/socialCreditStore";
+import { addFilter, checkFilter, filterEmitter, FILTER_ADD_EVENT, FILTER_FOUND_EVENT, FILTER_REMOVE_EVENT, getFilter } from "./filter/filterStore";
 import { bootStrapFilterEvents } from "./filter/filterEventHandler";
 import { bootStrapSocialCreditEvents } from "./socialCredit/socialCreditEventHandler";
 
@@ -14,7 +14,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 client.once('ready', async () => {
 	bootStrapCommands();
 	bootStrapFilterEvents();
-	bootStrapSocialCreditEvents();
+	bootStrapSocialCreditEvents(client);
 	const guild = await client.guilds.fetch(guildId);
 	const members = await (await guild.members.fetch()).map(m => m.user.id);
 	onStartUp(members);
@@ -24,13 +24,17 @@ client.once('ready', async () => {
 
 client.on('messageCreate', async message => {
 	let content : string = message.content;
+	let cost : number = 0;
 	const list = content.split(/[ ,]+/);
 	list.forEach(s =>{
 		//Check if the word is in the filter
 		if(checkFilter(s)) {
-			filterEmitter.emit(FILTER_FOUND_EVENT,message,s);
+			cost += getFilter(s)?.cost as number;
 		}
 	});
+	if(cost > 0){
+		filterEmitter.emit(FILTER_FOUND_EVENT,message, cost);
+	}
 });
 
 client.on('interactionCreate', async interaction => {
@@ -60,6 +64,9 @@ client.on('interactionCreate', async interaction => {
 	}
 	else if (commandName === 'cut_filter'){
 		filterEmitter.emit(FILTER_REMOVE_EVENT, interaction);
+	}
+	else if(commandName === 'leader_board'){
+		socialCreditEmitter.emit(LEADERBOARD_EVENT, interaction);
 	}
 });
 

@@ -1,2 +1,2 @@
 ## CCP Bot
-A bot that keeps track of social credit score of each server members, will add more features down the line
+A bot that keeps track of the well being of everyone in the discord server
