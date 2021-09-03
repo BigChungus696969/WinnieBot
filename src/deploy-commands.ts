@@ -16,26 +16,49 @@ const commands = [
   new SlashCommandBuilder()
     .setName("add")
     .setDescription("add social credit score")
-    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something'))
-    .addIntegerOption(option => option.setName('credit').setDescription('credits to add')),
+    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something').setRequired(true))
+    .addIntegerOption(option => option.setName('credit').setDescription('credits to add').setRequired(true)),
     new SlashCommandBuilder()
     .setName("cut")
     .setDescription("remove social credit score")
-    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something'))
-    .addIntegerOption(option => option.setName('credit').setDescription('credits to cut')),
+    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something').setRequired(true))
+    .addIntegerOption(option => option.setName('credit').setDescription('credits to cut').setRequired(true)),
     new SlashCommandBuilder()
     .setName("check")
     .setDescription("check social credit score")
-    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something')),
+    .addMentionableOption(option => option.setName('mentionable').setDescription('Mention something').setRequired(true)),
     new SlashCommandBuilder()
     .setName("add_filter")
     .setDescription("add a filter")
-    .addStringOption(option => option.setName('filter').setDescription('A word to filter'))
-    .addIntegerOption(option => option.setName('cost').setDescription('credits to cut')),
+    .addSubcommand(subcommand =>
+      subcommand
+        .setName('type')
+        .setDescription('Good or bad filter')
+        .addStringOption( option => 
+          option.setName('type')
+          .setDescription('type of filter')
+          .addChoice('good','good')
+          .addChoice('bad', 'bad')
+          .setRequired(true)
+      )
+      .addStringOption(option => option.setName('filter').setDescription('A word to filter').setRequired(true))
+      .addIntegerOption(option => option.setName('cost').setDescription('credits to cut').setRequired(true))),
     new SlashCommandBuilder()
     .setName("cut_filter")
     .setDescription("remove a filter")
-    .addStringOption(option => option.setName('filter').setDescription('A word to filter')),
+    .addSubcommand(subcommand =>
+      subcommand
+        .setName('type')
+        .setDescription('Good or bad filter')
+        .addStringOption( option => 
+          option.setName('type')
+          .setDescription('type of filter')
+          .addChoice('good','good')
+          .addChoice('bad', 'bad')
+          .setRequired(true)
+      )
+      .addStringOption(option => option.setName('filter').setDescription('A word to filter').setRequired(true))
+      ),
     new SlashCommandBuilder()
     .setName("leader_board")
     .setDescription("Lists the leadboard of the best citizens")

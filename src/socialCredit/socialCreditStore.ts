@@ -9,11 +9,14 @@ export const ADD_EVENT = 'addSocialCredit';
 export const CUT_EVENT = 'cutSocialCredit';
 export const LEADERBOARD_EVENT = 'leaderBoard';
 
+const MAX_CREDIT = 150;
+const INITIAL_CREDIT = 100;
+
 //loads social credit form file
 export function onStartUp(idList : string[]){
     idList.forEach((i) => {
         if(!localStorage.getItem(i)) {
-            localStorage.setItem(i, {score: 100});
+            localStorage.setItem(i, {score: INITIAL_CREDIT});
         }
     });
     socialCreditEmitter.emit('startUp');
@@ -25,7 +28,7 @@ export function addSocialCredit(userId: string, amount: number) {
         return;
     }
     const original : number = Math.max(localStorage.getItem( userId ).score, 0);
-    const newCredit : SocialCredit = { score: Math.min(original + amount , 100)};
+    const newCredit : SocialCredit = { score: Math.min(original + amount , MAX_CREDIT)};
     localStorage.setItem(userId,newCredit!);
 }
 

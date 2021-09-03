@@ -1,30 +1,41 @@
 import { CommandInteraction, Interaction, Message } from "discord.js";
-import { addFilter, checkFilter, filterEmitter, FILTER_ADD_EVENT, FILTER_FOUND_EVENT, FILTER_REMOVE_EVENT, getFilter, removeFilter } from "./filterStore";
-import { getSocialCredit, reduceSocialCredit } from "../socialCredit/socialCreditStore";
+import { FilterStore, FILTER_ADD_EVENT, FILTER_FOUND_EVENT, FILTER_REMOVE_EVENT} from "./filterStore";
+import { addSocialCredit, getSocialCredit, reduceSocialCredit } from "../socialCredit/socialCreditStore";
 import { clientId } from "../../config.json";
 
-export function bootStrapFilterEvents(){
-    filterEmitter.on(FILTER_FOUND_EVENT, async (message: Message, cost: number) => {
+export const badFilterStore : FilterStore = new FilterStore("./badwords");
+export const goodFilterStore : FilterStore = new FilterStore("./goodwords");
+
+const GOODMESSAGE = "You said good word, good citizen, now your social credit is:";
+const BADMESSAGE = "You said nono word, now your social credit is:";
+
+export function bootStrapFilterEvents(filterStore : FilterStore, isGood : boolean){
+    filterStore.getEmitter().on(FILTER_FOUND_EVENT, async (message: Message, cost: number) => {
         if(message.author.id === clientId){
             return;
         }
         const userId = message.author.id;
-        reduceSocialCredit(userId,cost);
+        if(cost > 0){
+            reduceSocialCredit(userId,cost);
+        }else{
+            addSocialCredit(userId,Math.abs(cost));
+        }
         const newNum = getSocialCredit(userId);
-		await message.reply(`${message.author} Your said nono word, now your social credit is: `+ newNum.score);
+        const strMessage = isGood? GOODMESSAGE : BADMESSAGE;
+		await message.reply(`${message.author} ${strMessage} `+ newNum.score);
     });
 
-    filterEmitter.on(FILTER_ADD_EVENT, async (interaction: CommandInteraction) => {
+    filterStore.getEmitter().on(FILTER_ADD_EVENT, async (interaction: CommandInteraction) => {
         const cost: number = interaction.options.getInteger('cost') as number;
         const filter: string = interaction.options.getString('filter') as string;
-        addFilter(filter,{cost : cost});
+        filterStore.addFilter(filter,{cost : cost});
 		await interaction.reply(`${filter} is added as a filter`);
     });
 
-    filterEmitter.on(FILTER_REMOVE_EVENT, async (interaction: CommandInteraction) => {
+    filterStore.getEmitter().on(FILTER_REMOVE_EVENT, async (interaction: CommandInteraction) => {
         const cost: number = interaction.options.getInteger('cost') as number;
         const filter: string = interaction.options.getString('filter') as string;
-        removeFilter(filter);
+        filterStore.removeFilter(filter);
 		await interaction.reply(`${filter} is removed as a filter`);
     });
 }

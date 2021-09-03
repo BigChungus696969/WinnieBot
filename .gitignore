@@ -1,5 +1,7 @@
 scratch/
 node_modules/
+goodwords/
+badwords/
 dist/
 filterStore/
 /config.json
